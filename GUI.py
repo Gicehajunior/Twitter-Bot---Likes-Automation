@@ -1,11 +1,10 @@
 from tkinter import *
 import time
-import turtle
 from includes import database
 from includes import credentials
 import bot
 
-# global scope of variables
+# global scope declaration of variables
 username= ""
 password = ""
 signup_screen = ""
@@ -32,13 +31,13 @@ def save_credentials():
     db_connection = database.cursor_connection(connection)
 
     User = credentials.User(connection, db_connection, username_info, password_info)
-    
+    User.create_table()
     User.save_user()
 
     Label(signup_screen, text="registered successfully! Go back to login window to activate the bot", fg="green", font=("Calibri", 11)).pack()
     
-    # print(User.fetch_user())
-
+    #print(User.fetch_user())
+    
 # activate bot 
 def activate_bot():
     # user_credential = ""
@@ -52,19 +51,21 @@ def activate_bot():
     #bot activation credentials
     User = credentials.User(connection, db_connection, login_username_info, login_password_info)
     
+    # list of user credentials returned
     user_credentials = User.activate_user_bot()
     
-    # print(User.activate_user_bot())
+    # access username and password from the tuple
+    users_username = user_credentials[0]
+    users_password = user_credentials[1]
     
-    for user_credential in user_credentials:
-        # print(user_credential[0])
-        # activate the bot and run
-        gj = bot.TwitterBOT(user_credential[0], user_credential[1])
-        gj.login()
-        gj.like_tweets('AndelaKenya')
-        
-        print(User.fetch_user())
-
+    # print the credentials
+    ### print(users_username)
+    ### print(users_password)
+    
+    # activate the bot
+    my_bot = bot.TwitterBOT(users_username, users_password)
+    my_bot.login()
+    my_bot.like_tweets('AndelaKenya')
 
 def register_user():
     global signup_screen
@@ -95,13 +96,13 @@ def register_user():
     Label(signup_screen, text = "").pack()
     
     Label(signup_screen, text = "Username * ").pack()
-    username_entry=Entry(signup_screen, textvariable = username)
+    username_entry = Entry(signup_screen, textvariable = username)
     username_entry.pack()
     
     Label(signup_screen, text = "").pack()
     
     Label(signup_screen, text = "Password * ").pack()
-    password_entry=Entry(signup_screen, textvariable = password) 
+    password_entry = Entry(signup_screen, textvariable = password) 
     password_entry.pack()
     
     Label(signup_screen, text = "").pack()
@@ -135,13 +136,13 @@ def main_win():
     login_password = StringVar()
     
     Label(text = "Twitters Username * ").pack()
-    login_username_entry = Entry(textvariable = username)
+    login_username_entry = Entry(textvariable = login_username)
     login_username_entry.pack()
     
     Label(text = "").pack()
     
     Label(text = "Twitters Password * ").pack()
-    login_password_entry = Entry(textvariable = password) 
+    login_password_entry = Entry(textvariable = login_password) 
     login_password_entry.pack()
     
     # extra labels
@@ -158,3 +159,4 @@ def main_win():
     screen.mainloop()
 
 main_win()
+
